@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2 class="fw-bold">All Products</h2>
+            <p class="text-muted">Browse our wide selection of products</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="d-flex justify-content-end align-items-center">
+                <form class="d-flex me-3" action="{% url 'products' %}" method="get">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search products..." name="q" value="{{ request.GET.q|default:'' }}">
+                        <button class="btn btn-primary" type="submit" style="border-top-right-radius: 0.25rem; border-bottom-right-radius: 0.25rem;">
+                            <i class="bi bi-search me-1"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle px-4" type="button" data-bs-toggle="dropdown"
+                        style="border-radius: 50px;">
+                        <i class="bi bi-filter me-1"></i>
+                        {% if selected_category %}{{ selected_category }}{% else %}All Categories{% endif %}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{% url 'products' %}">All Categories</a></li>
+                        {% for category in categories %}
+                        <li><a class="dropdown-item" href="{% url 'products' %}?category={{ category }}">{{ category }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for product in products %}
+        <div class="col-md-4 col-lg-3">
+            <a href="{% url 'product_description' product.id %}" style="text-decoration: none; color: inherit;">
+                <div class="card product-card">
+                    <div class="position-relative">
+                        <img src="{{ product.product_image.url }}" class="product-img" alt="{{ product.name }}">
+                        {% if product.free_shipping %}
+                        <span class="position-absolute top-0 end-0 m-2 badge bg-success">Free Shipping</span>
+                        {% endif %}
+                        {% if product.featured %}
+                        <span class="position-absolute top-0 start-0 m-2 badge bg-warning text-dark">Featured</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <span class="badge badge-category mb-2">{{ product.category }}</span>
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text text-muted">{{ product.brand }}</p>
+                        <div class="d-flex align-items-center justify-content-between gap-2">
+                            <h5 class="mb-0 text-primary fw-semibold">₹ {{ product.price }}</h5>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'position-fixed bottom-0 end-0 p-3';
+        toast.style.zIndex = '11';
+        toast.innerHTML = `
+            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-primary text-white">
+                    <strong class="me-auto">Added to Cart</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || {};
+        const count = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById('cartCount').textContent = count;
+    }
+
+    // Initialize cart count
+    updateCartCount();
+</script>
+{% endblock %}
+{% endblock %}

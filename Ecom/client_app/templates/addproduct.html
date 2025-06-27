@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product - E-commerce</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        .image-upload-wrapper {
+            border: 2px dashed #dee2e6;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .image-upload-wrapper:hover {
+            border-color: #667eea;
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+
+        .image-upload-icon {
+            font-size: 2.5rem;
+            color: #adb5bd;
+            margin-bottom: 1rem;
+        }
+
+        .product-image-preview {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    {% if messages %}
+    {% for message in messages %}
+    <script>
+        alert("{{ message|escapejs }}");
+    </script>
+    {% endfor %}
+    {% endif %}
+    <div class="container py-5">
+        <div class="row d-flex justify-content-center align-items-center">
+            <div class="col-xl-10">
+                <div class="card card-rounded shadow-lg overflow-hidden">
+                    <div class="row g-0">
+                        <!-- Left side with image -->
+                        <div class="col-lg-6 d-none d-lg-flex">
+                            <div class="d-flex align-items-center justify-content-center p-5">
+                                <img src="https://img.freepik.com/free-vector/new-product-concept-illustration_114360-7031.jpg"
+                                    alt="Add Product" class="img-fluid">
+                            </div>
+                        </div>
+
+                        <!-- Right side with form -->
+                        <div class="col-lg-6">
+                            <div class="card-body p-5">
+                                <div class="text-center mb-4">
+                                    <h2 class="fw-bold text-primary">Add New Product</h2>
+                                    <p class="text-muted">Fill in all required details to add a new product</p>
+                                </div>
+
+                                <form method="post" enctype="multipart/form-data" novalidate
+                                    action="{% url 'addproduct' %}">
+                                    {% csrf_token %}
+                                    <!-- Product Name -->
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Product Name <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="bi bi-box-seam text-primary"></i></span>
+                                            <input type="text" class="form-control" id="name" name="name" required
+                                                placeholder="e.g., Wireless Bluetooth Headphones">
+                                        </div>
+                                        <div class="invalid-feedback">
+                                            Please provide a product name.
+                                        </div>
+                                    </div>
+
+                                    <!-- Category and Brand -->
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="category" class="form-label">Category <span
+                                                    class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light">
+                                                    <i class="bi bi-tags text-primary"></i>
+                                                </span>
+                                                <select class="form-select" id="category" name="category" required
+                                                    onchange="toggleCustomCategory(this)">
+                                                    <option value="" selected disabled>Select category</option>
+                                                    <option value="Electronics">Electronics</option>
+                                                    <option value="Clothing">Clothing</option>
+                                                    <option value="Home & Garden">Home & Garden</option>
+                                                    <option value="Books">Books</option>
+                                                    <option value="Beauty">Beauty</option>
+                                                    <option value="Toys">Toys</option>
+                                                    <option value="Groceries">Groceries</option>
+                                                    <option value="Footwear">Footwear</option>
+                                                    <option value="Stationery">Stationery</option>
+                                                    <option value="Accessories">Accessories</option>
+                                                    <option value="Furniture">Furniture</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </div>
+                                            <div class="invalid-feedback">Please select a category.</div>
+
+                                            <!-- Hidden input for custom category -->
+                                            <div class="input-group mt-2 d-none" id="custom-category-wrapper">
+                                                <span class="input-group-text bg-light"><i
+                                                        class="bi bi-pencil-square text-primary"></i></span>
+                                                <input type="text" class="form-control" id="custom-category"
+                                                    name="category" placeholder="Enter custom category">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label for="brand" class="form-label">Brand</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light">
+                                                    <i class="bi bi-shop text-primary"></i>
+                                                </span>
+                                                <input type="text" class="form-control" id="brand" name="brand"
+                                                    placeholder="e.g., Sony, Nike">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Description -->
+                                    <div class="mb-3">
+                                        <label for="description" class="form-label">Description <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="bi bi-text-paragraph text-primary"></i></span>
+                                            <textarea class="form-control" id="description" name="description" rows="3"
+                                                required
+                                                placeholder="Describe the product features, specifications, etc."></textarea>
+                                        </div>
+                                        <div class="invalid-feedback">
+                                            Please provide a product description.
+                                        </div>
+                                    </div>
+
+                                    <!-- Price and Stock -->
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="price" class="form-label">Price (Rs) <span
+                                                    class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light"><i
+                                                        class="bi bi-currency-rupee text-primary"></i></span>
+                                                <input type="number" class="form-control" id="price" name="price"
+                                                    step="0.01" min="0" required placeholder="0.00">
+                                            </div>
+                                            <div class="invalid-feedback">
+                                                Please enter a valid price.
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="stock" class="form-label">Stock Quantity <span
+                                                    class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light"><i
+                                                        class="bi bi-boxes text-primary"></i></span>
+                                                <input type="number" class="form-control" id="stock" name="stock"
+                                                    min="0" required placeholder="0">
+                                            </div>
+                                            <div class="invalid-feedback">
+                                                Please enter stock quantity.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Image Upload -->
+                                    <div class="mb-4">
+                                        <label class="form-label">Product Image <span
+                                                class="text-danger">*</span></label>
+                                        <div class="image-upload-wrapper">
+                                            <img id="imagePreview" src="#" alt="Preview"
+                                                class="product-image-preview mb-3">
+                                            <div class="image-upload-icon">
+                                                <i class="bi bi-cloud-arrow-up"></i>
+                                            </div>
+                                            <input type="file" class="form-control d-none" id="image" name="image"
+                                                accept="image/*" required onchange="previewImage(this)">
+                                            <label for="image" class="btn btn-outline-primary mb-2">Choose File</label>
+                                            <div class="mt-2">
+                                                <small class="text-muted">JPEG, PNG or GIF (Max 5MB)</small>
+                                            </div>
+                                        </div>
+                                        <div class="invalid-feedback">
+                                            Please upload a product image.
+                                        </div>
+                                    </div>
+
+                                    <!-- Options -->
+                                    <div class="mb-4">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="featured"
+                                                name="featured">
+                                            <label class="form-check-label" for="featured">
+                                                Feature this product on homepage
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="free_shipping"
+                                                name="free_shipping">
+                                            <label class="form-check-label" for="free_shipping">
+                                                Offer free shipping
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                                        <i class="bi bi-plus-circle me-2"></i> Add Product
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleCustomCategory(selectElement) {
+            const wrapper = document.getElementById('custom-category-wrapper');
+            const customInput = document.getElementById('custom-category');
+
+            if (selectElement.value === 'Other') {
+                wrapper.classList.remove('d-none');
+                customInput.required = true;
+
+                // Reset custom input value
+                customInput.value = "";
+            } else {
+                wrapper.classList.add('d-none');
+                customInput.required = false;
+            }
+        }
+
+        // Capitalize first letter on input
+        document.addEventListener("input", function (e) {
+            if (e.target.id === "custom-category") {
+                let value = e.target.value;
+                if (value.length > 0) {
+                    e.target.value = value.charAt(0).toUpperCase() + value.slice(1);
+                }
+            }
+        });
+    </script>
+    <script>
+        // Form validation
+        (function () {
+            'use strict';
+
+            const form = document.querySelector('form');
+
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                form.classList.add('was-validated');
+            }, false);
+        })();
+
+        // Image preview functionality
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            const file = input.files[0];
+            const reader = new FileReader();
+
+            reader.onloadend = function () {
+                preview.src = reader.result;
+                preview.style.display = 'block';
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = '';
+                preview.style.display = 'none';
+            }
+        }
+
+        // Add icons to select dropdown options
+        document.addEventListener('DOMContentLoaded', function () {
+            const categorySelect = document.getElementById('category');
+            const options = categorySelect.querySelectorAll('option');
+
+            options.forEach(option => {
+                if (option.value) {
+                    let icon = '';
+                    switch (option.value) {
+                        case 'electronics':
+                            icon = '<i class="bi bi-laptop me-2"></i>';
+                            break;
+                        case 'clothing':
+                            icon = '<i class="bi bi-tshirt me-2"></i>';
+                            break;
+                        case 'home':
+                            icon = '<i class="bi bi-house-door me-2"></i>';
+                            break;
+                        case 'books':
+                            icon = '<i class="bi bi-book me-2"></i>';
+                            break;
+                        case 'beauty':
+                            icon = '<i class="bi bi-brush me-2"></i>';
+                            break;
+                    }
+                    option.innerHTML = icon + option.text;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

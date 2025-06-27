@@ -1,0 +1,108 @@
+{% extends 'ecomadmin/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Edit Product</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="name" class="form-label">Product Name*</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ product.name }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="price" class="form-label">Price*</label>
+                        <input type="number" step="0.01" class="form-control" id="price" name="price" value="{{ product.price }}" required>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="stock" class="form-label">Stock*</label>
+                        <input type="number" class="form-control" id="stock" name="stock" value="{{ product.stock }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="category" class="form-label">Category*</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="">Select Category</option>
+                            {% for category in categories %}
+                            <option value="{{ category }}" {% if category == product.category %}selected{% endif %}>{{ category }}</option>
+                            {% endfor %}
+                            <option value="new_category" {% if product.category not in categories %}selected{% endif %}>Other (Add New)</option>
+                        </select>
+                        <div id="newCategoryContainer" class="mt-2{% if product.category not in categories %} d-block{% else %} d-none{% endif %}">
+                            <label for="new_category_name" class="form-label">New Category Name*</label>
+                            <input type="text" class="form-control" id="new_category_name" name="new_category_name" value="{% if product.category not in categories %}{{ product.category }}{% endif %}">
+                            <small class="text-muted">First letter will be capitalized automatically</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="brand" class="form-label">Brand</label>
+                        <input type="text" class="form-control" id="brand" name="brand" value="{{ product.brand|default_if_none:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="product_image" class="form-label">Product Image</label>
+                        <input type="file" class="form-control" id="product_image" name="product_image">
+                        {% if product.product_image %}
+                        <div class="mt-2">
+                            <img src="{{ product.product_image.url }}" alt="{{ product.name }}" width="100">
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="clear_image" name="clear_image">
+                                <label class="form-check-label" for="clear_image">Remove current image</label>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <small class="text-muted">Max size: 5MB</small>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3">{{ product.description|default_if_none:'' }}</textarea>
+                </div>
+                
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="featured" name="featured" {% if product.featured %}checked{% endif %}>
+                    <label class="form-check-label" for="featured">Featured Product</label>
+                </div>
+                
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="free_shipping" name="free_shipping" {% if product.free_shipping %}checked{% endif %}>
+                    <label class="form-check-label" for="free_shipping">Free Shipping</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Update Product</button>
+                <a href="{% url 'admin_product_management' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('category').addEventListener('change', function() {
+        const newCategoryContainer = document.getElementById('newCategoryContainer');
+        if (this.value === 'new_category') {
+            newCategoryContainer.classList.remove('d-none');
+            newCategoryContainer.classList.add('d-block');
+            document.getElementById('new_category_name').required = true;
+        } else {
+            newCategoryContainer.classList.remove('d-block');
+            newCategoryContainer.classList.add('d-none');
+            document.getElementById('new_category_name').required = false;
+        }
+    });
+
+    document.getElementById('new_category_name').addEventListener('input', function() {
+        if (this.value.length > 0) {
+            this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1).toLowerCase();
+        }
+    });
+</script>
+{% endblock %}

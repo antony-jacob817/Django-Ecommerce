@@ -1,0 +1,98 @@
+{% extends 'ecomadmin/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Add New Product</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="name" class="form-label">Product Name*</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="price" class="form-label">Price*</label>
+                        <input type="number" step="0.01" class="form-control" id="price" name="price" required>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="stock" class="form-label">Stock*</label>
+                        <input type="number" class="form-control" id="stock" name="stock" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="category" class="form-label">Category*</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="">Select Category</option>
+                            {% for category in categories %}
+                            <option value="{{ category }}">{{ category }}</option>
+                            {% endfor %}
+                            <option value="new_category">Other (Add New)</option>
+                        </select>
+                        <div id="newCategoryContainer" class="mt-2" style="display: none;">
+                            <label for="new_category_name" class="form-label">New Category Name*</label>
+                            <input type="text" class="form-control" id="new_category_name" name="new_category_name">
+                            <small class="text-muted">First letter will be capitalized automatically</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Rest of the form remains the same -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="brand" class="form-label">Brand</label>
+                        <input type="text" class="form-control" id="brand" name="brand">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="product_image" class="form-label">Product Image</label>
+                        <input type="file" class="form-control" id="product_image" name="product_image">
+                        <small class="text-muted">Max size: 5MB</small>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                </div>
+                
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="featured" name="featured">
+                    <label class="form-check-label" for="featured">Featured Product</label>
+                </div>
+                
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="free_shipping" name="free_shipping">
+                    <label class="form-check-label" for="free_shipping">Free Shipping</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Save Product</button>
+                <a href="{% url 'admin_product_management' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('category').addEventListener('change', function() {
+        const newCategoryContainer = document.getElementById('newCategoryContainer');
+        if (this.value === 'new_category') {
+            newCategoryContainer.style.display = 'block';
+            document.getElementById('new_category_name').required = true;
+        } else {
+            newCategoryContainer.style.display = 'none';
+            document.getElementById('new_category_name').required = false;
+        }
+    });
+
+    document.getElementById('new_category_name').addEventListener('input', function() {
+        if (this.value.length > 0) {
+            this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1).toLowerCase();
+        }
+    });
+</script>
+{% endblock %}

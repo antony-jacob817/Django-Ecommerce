@@ -1,0 +1,102 @@
+{% extends 'ecomadmin/base.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Order #{{ order.id }}</h5>
+        <a href="{% url 'admin_order_list' %}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Orders
+        </a>
+    </div>
+    
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6>Order Details</h6>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Date:</strong> {{ order.created_at|date:"M d, Y" }}</p>
+                        <p><strong>Status:</strong> 
+                            <span class="badge 
+                                {% if order.status == 'completed' %}bg-success
+                                {% elif order.status == 'cancelled' %}bg-danger
+                                {% else %}bg-warning text-dark{% endif %}">
+                                {{ order.status|title }}
+                            </span>
+                        </p>
+                        <p><strong>Customer:</strong> 
+                            {% if order.user %}
+                                {{ order.user.username }} ({{ order.user.email }})
+                            {% else %}
+                                Guest
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6>Order Summary</h6>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.items.all %}
+                                <tr>
+                                    <td>{{ item.product_name }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>Rs {{ item.price }}</td>
+                                    <td>Rs {% widthratio item.price 1 item.quantity %}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr class="table-active">
+                                    <td colspan="3"><strong>Total</strong></td>
+                                    <td><strong>Rs {{ order.total_amount }}</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h6>Order Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="btn-group">
+                    <form method="POST" action="{% url 'admin_order_detail' order.id %}" class="me-2">
+                        {% csrf_token %}
+                        <input type="hidden" name="status" value="completed">
+                        <button type="submit" class="btn btn-success" 
+                                {% if order.status == 'completed' %}disabled{% endif %}>
+                            <i class="fas fa-check"></i> Mark as Completed
+                        </button>
+                    </form>
+                    <form method="POST" action="{% url 'admin_order_detail' order.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="status" value="cancelled">
+                        <button type="submit" class="btn btn-danger" 
+                                {% if order.status == 'cancelled' %}disabled{% endif %}>
+                            <i class="fas fa-times"></i> Cancel Order
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
