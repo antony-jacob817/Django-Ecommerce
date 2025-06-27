@@ -65,10 +65,6 @@ Django Ecommerce is a full-featured online shopping website inspired by platform
 ![Screenshot 2025-06-27 231830](https://github.com/user-attachments/assets/2f3e74fd-4c8d-447e-bab0-a4c13d0475d9)
 ![Screenshot 2025-06-27 231601](https://github.com/user-attachments/assets/5be6a67d-9e3e-47ec-9d01-ca853924b502)
 
-## 🤝 Contributing
-
-Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
-
 ## 📄 License
 
 This project is open source and available under the [MIT License](LICENSE).
