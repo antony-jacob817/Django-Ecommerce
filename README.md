@@ -1,4 +1,4 @@
-# 🛒 Django Ecommerce
+#  Django Ecommerce
 
 Django Ecommerce is a full-featured online shopping website inspired by platforms like Amazon. Built using Django (Python) and HTML, this project demonstrates a modern e-commerce website with essential features for both buyers and sellers.
 
